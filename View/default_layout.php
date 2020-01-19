@@ -13,7 +13,8 @@
 <a href="/index.php?route=index/contact">Contact</a>
 
 <hr>
-Hello
+<?= /** @var string $content */
+$content?>
 <br>
 <br>
 <br>
