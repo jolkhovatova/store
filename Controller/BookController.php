@@ -1,11 +1,11 @@
 <?php
 
 
-class BookController
+class BookController extends Controller
 {
     public function indexAction(Request $request)
     {
-        return 'this is index action of book controller';
+        return $this->render('index');
     }
 
 
