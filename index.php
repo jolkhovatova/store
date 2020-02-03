@@ -13,36 +13,44 @@ function __autoload($className)
 
     if (file_exists(LIB_DIR . $file)) {
         require_once LIB_DIR . $file;
-    }elseif (file_exists(CONTROLLER_DIR . $file)) {
+    } elseif (file_exists(CONTROLLER_DIR . $file)) {
         require_once CONTROLLER_DIR . $file;
-    }elseif (file_exists(MODEL_DIR . $file)) {
+    } elseif (file_exists(MODEL_DIR . $file)) {
         require_once MODEL_DIR . $file;
-    }else {
-        die("{$file} not found");
+    } else {
+        throw new Exception("{$file} not found", 500);
     }
 
 }
 
-$request = new Request();
-$route = $request->get('route'); //$_GET['route']
+try {
+    $request = new Request();
+    $route = $request->get('route'); //$_GET['route']
 
-if (is_null($route)) {
-    $route = 'index/index';
-}
+    if (is_null($route)) {
+        $route = 'index/index';
+    }
 
-$arRoute = explode('/', $route);
+    $arRoute = explode('/', $route);
 //[ =>$controllerName, 1=>$actionName] = explode('/', $route);
 
-$controller = ucfirst($arRoute[0]) . 'Controller'; // IndexController
-$action = $arRoute[1] . 'Action'; //indexController
+    $controller = ucfirst($arRoute[0]) . 'Controller'; // IndexController
+    $action = $arRoute[1] . 'Action'; //indexController
 
-$controller = new $controller();
+    $controller = new $controller();
 
-if(!method_exists($controller, $action)){
-    die("{$action} not fount");
+
+    if (!method_exists($controller, $action)) {
+        throw new Exception("{$action} not fount", 500);
+    }
+    $content = $controller->$action($request);
+} catch (Exception $e) {
+    $content = Controller::renderError($e->getMessage(), $e->getCode());
+}catch (NotFoundException $e) {
+    $content = Controller::renderError($e->getMessage(), $e->getCode());
 }
 
-$content = $controller->$action($request);
+
 
 require VIEW_DIR . 'default_layout.php';
 echo '<hr><pre>';
